@@ -20,12 +20,12 @@ export const encryptUsingAes256CtrAglorithm = (text) => {
 };
 
 export const decryptUsingAes256CtrAglorithm = (encryptedText) => {
-    const cipher = crypto.createDecipheriv(algorithm, sharedKey, iv);
-    console.log("decipher: ", cipher);
+    const decipher = crypto.createDecipheriv(algorithm, sharedKey, iv);
+    console.log("decipher: ", decipher);
 
     const decryptedData = Buffer.concat([
-        cipher.update(Buffer.from(encryptedText, "hex")),
-        cipher.final()
+        decipher.update(Buffer.from(encryptedText, "hex")),
+        decipher.final()
     ])
     return decryptedData.toString();
 };

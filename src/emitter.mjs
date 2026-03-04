@@ -4,6 +4,9 @@
 
 // import { data } from "../data/data.json";
 import { decryptUsingAes256CtrAglorithm, encryptUsingAes256CtrAglorithm, generateSecretKey } from "./helpers.mjs";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:4000");
 
 export const encryptStreamData = () => {
     try {
@@ -27,8 +30,7 @@ export const encryptStreamData = () => {
         console.log("encryptedData :", encryptedData);
         // Then use socket and send it to listener and also implement to read message stream in every 10 seconds
 
-        const decryptedData = decryptUsingAes256CtrAglorithm(encryptedData);
-        console.log("decryptedData: ", decryptedData);
+        return encryptedData;
 
     } catch(error) {
         console.error("Error for encryptData: ", error);
@@ -36,4 +38,14 @@ export const encryptStreamData = () => {
     }
 };
 
-encryptStreamData();
+socket.on("connect", () => {
+    console.log("Connected to listener");
+    setInterval(() => {
+        const encrypedData = encryptStreamData();
+        socket.emit("encrypted data", encrypedData);
+        console.log("Message sent successfully");
+    }, 10000);
+})
+
+
+// Creating a socket client which will send message 
