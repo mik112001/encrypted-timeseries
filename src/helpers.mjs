@@ -1,8 +1,8 @@
 import crypto from "crypto";
 
 const algorithm = "aes-256-ctr";
-const sharedKey = crypto.randomBytes(32);
-const iv = crypto.randomBytes(16);
+const sharedKey = crypto.createHash("sha256").update("encrypted-timeseries-secret").digest();
+const iv = Buffer.from("1234567890123456")
 
 export const generateSecretKey = (message) => {
     const data = `${message.name}:${message.origin}:${message.destination}`;

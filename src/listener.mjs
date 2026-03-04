@@ -19,6 +19,8 @@ io.on("connection", (socket) => {
 
         const decryptedData = decryptUsingAes256CtrAglorithm(encrypedData);
         console.log("decryptedData: ", decryptedData);
+        // const payload = JSON.parse(decryptedData);
+        // console.log("Payload: ", payload);
     });
 });
 
