@@ -21,7 +21,6 @@ export const encryptUsingAes256CtrAglorithm = (text) => {
 
 export const decryptUsingAes256CtrAglorithm = (encryptedText) => {
     const decipher = crypto.createDecipheriv(algorithm, sharedKey, iv);
-    console.log("decipher: ", decipher);
 
     const decryptedData = Buffer.concat([
         decipher.update(Buffer.from(encryptedText, "hex")),

@@ -7,7 +7,8 @@
         },
         {
             "name": "Jack Reacher",
-            "origin": "Bengaluru"
+            "origin": "Bengaluru",
+            "destination": "Dubai"
         },
         {
             "name": "Mukund",
@@ -20,6 +21,7 @@
             "destination": "Dubai"
         },
         {
+            "name": "J",
             "origin": "Bengaluru",
             "destination": "Mumbai"
         }

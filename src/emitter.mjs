@@ -2,8 +2,8 @@
 // Add secret key 
 // encrypt it using aes-256-ctr algorithm and size should be in the range of 49-499 
 
-// import { data } from "../data/data.json";
-import { decryptUsingAes256CtrAglorithm, encryptUsingAes256CtrAglorithm, generateSecretKey } from "./helpers.mjs";
+import data from "../data/data.json" assert { type: "json" };
+import { encryptUsingAes256CtrAglorithm, generateSecretKey } from "./helpers.mjs";
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:4000");
@@ -11,26 +11,38 @@ const socket = io("http://localhost:4000");
 export const encryptStreamData = () => {
     try {
         // Get data first and validate it
-        const originalData = {
-            name: 'Jack Reacher',
-            origin: 'Bengaluru',
-            destination: 'Mumbai'
-        };
+        // Here first I have run it for single message
+        // Then use array of message or data
+        // Now final as per requirement need random 49-499 messages or data from the data.json file
+        // For this I will add 500 data in data.json file
+        // And then randomly create a number between 49 and 499
+        // And pick that many data from the data.json file (you can also add your data.json file for testing purpose)
 
-        // Create sha-256 key
-        const secretKey = generateSecretKey(originalData);
-        console.log("secretKey: ", secretKey);
-        const sumCheckMessage = {
-            ...originalData,
-            secret_key: secretKey
+        const messageCount = Math.floor(Math.random() * (99 - 49 + 1)) + 49;
+
+        let allEncrypedData = [];
+        for(let i = 0; i < messageCount; i++) {
+            const originalData = getRandomMessageFromDataFile(data.originalMessage.length);
+            if(!originalData?.destination || !originalData?.name || !originalData.origin) {
+                continue;
+            }
+
+            // Create sha-256 key
+            const secretKey = generateSecretKey(originalData);
+            console.log("secretKey: ", secretKey);
+            const sumCheckMessage = {
+                ...originalData,
+                secret_key: secretKey
+            }
+
+            // Now encrypt it using aes-256-ctr algorithm
+            const encryptedData = encryptUsingAes256CtrAglorithm(JSON.stringify(sumCheckMessage));
+            // console.log("encryptedData :", encryptedData);
+            allEncrypedData.push(encryptedData);
         }
-
-        // Now encrypt it using aes-256-ctr algorithm
-        const encryptedData = encryptUsingAes256CtrAglorithm(JSON.stringify(sumCheckMessage));
-        console.log("encryptedData :", encryptedData);
-        // Then use socket and send it to listener and also implement to read message stream in every 10 seconds
-
-        return encryptedData;
+        const encryptStream = allEncrypedData.join("|");
+        console.log("encryptStream: ", encryptStream);
+        return encryptStream;
 
     } catch(error) {
         console.error("Error for encryptData: ", error);
@@ -41,11 +53,13 @@ export const encryptStreamData = () => {
 socket.on("connect", () => {
     console.log("Connected to listener");
     setInterval(() => {
-        const encrypedData = encryptStreamData();
-        socket.emit("encrypted data", encrypedData);
+        const encrypedStream = encryptStreamData();
+        socket.emit("encrypted stream", encrypedStream);
         console.log("Message sent successfully");
     }, 10000);
-})
+});
 
-
-// Creating a socket client which will send message 
+const getRandomMessageFromDataFile = (originalMessageLength) => {
+    const originalMessage = data.originalMessage;
+    return originalMessage[Math.floor(Math.random() * originalMessageLength)];
+}; 
