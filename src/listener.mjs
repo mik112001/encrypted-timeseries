@@ -28,7 +28,7 @@ app.listen(5000, () => {
     console.log("Frontend running on http://localhost:5000");
 });
 
-const client = await connectToMongoClient();
+await connectToMongoClient();
 
 const io = new Server(4000, {
     cors: {
@@ -40,9 +40,8 @@ console.log("Listener is running on PORT 4000");
 
 io.on("connection", async(socket) => {
     console.log("Emitter connected");
-    let now = "";
+    let now = new Date();
     socket.on("encrypted stream", async(encrypedStream) => {
-        // console.log("Received encryted message", encrypedStream);
         const encrypedStreamData = encrypedStream.split("|");
         const allDecrypedData = [];
         for(const encrypedData of encrypedStreamData) {
