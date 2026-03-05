@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Encrypted TimeSeries Monitor</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+        }
+
+        .metrics {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Encrypted Timeseries Monitor</h2>
+
+<div class="metrics">
+    <p>Total Messages: <span id="total">0</span></p>
+    <p>Valid Messages: <span id="valid">0</span></p>
+    <p>Failed Messages: <span id="failed">0</span></p>
+    <p>Success Rate: <span id="rate">0%</span></p>
+</div>
+
+<table>
+<thead>
+<tr>
+    <th>Name</th>
+    <th>Origin</th>
+    <th>Destination</th>
+    <th>Timestamp</th>
+</tr>
+</thead>
+
+<tbody id="data-table"></tbody>
+
+</table>
+
+<script>
+
+const socket = io("http://localhost:4000");
+
+socket.on("processed data", (data) => {
+
+    document.getElementById("total").innerText = data.totalMessages;
+    document.getElementById("valid").innerText = data.validMessages;
+    document.getElementById("failed").innerText = data.failedMessages;
+    document.getElementById("rate").innerText = data.successRate.toFixed(2) + "%";
+
+    const table = document.getElementById("data-table");
+
+    data.records.forEach(record => {
+
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${record.name}</td>
+            <td>${record.origin}</td>
+            <td>${record.destination}</td>
+            <td>${new Date(record.timeStamp).toLocaleString()}</td>
+        `;
+
+        table.prepend(row);
+
+        if (table.rows.length > 50) {
+            table.deleteRow(50);
+        }
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

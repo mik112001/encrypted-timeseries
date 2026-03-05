@@ -2,7 +2,8 @@ import crypto from "crypto";
 
 const algorithm = "aes-256-ctr";
 const sharedKey = crypto.createHash("sha256").update("encrypted-timeseries-secret").digest();
-const iv = Buffer.from("1234567890123456")
+const iv = Buffer.from("1234567890123456");
+// Static IV for assignment simplicity. In production IV should be random per message.
 
 export const generateSecretKey = (message) => {
     const data = `${message.name}:${message.origin}:${message.destination}`;
