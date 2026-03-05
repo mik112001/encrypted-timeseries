@@ -1,12 +1,11 @@
-// Here I will create the message 
-// Add secret key 
-// encrypt it using aes-256-ctr algorithm and size should be in the range of 49-499 
-
 import data from "../data/data.json" assert { type: "json" };
 import { encryptUsingAes256CtrAglorithm, generateSecretKey } from "./helpers.mjs";
 import { io } from "socket.io-client";
+import dotenv from "dotenv";
 
-const socket = io("http://localhost:4000");
+dotenv.config({ path: "../.env"});
+
+const socket = io(process.env.SOCKET_URI);
 
 export const encryptStreamData = () => {
     try {
@@ -37,7 +36,6 @@ export const encryptStreamData = () => {
 
             // Now encrypt it using aes-256-ctr algorithm
             const encryptedData = encryptUsingAes256CtrAglorithm(JSON.stringify(sumCheckMessage));
-            // console.log("encryptedData :", encryptedData);
             allEncrypedData.push(encryptedData);
         }
         const encryptStream = allEncrypedData.join("|");
